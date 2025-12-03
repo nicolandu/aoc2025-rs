@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 advent_of_code::solution!(2);
 
 fn first_repeat_starting(x: u64) -> u64 {
