@@ -8,8 +8,16 @@ pub mod template;
 
 pub const NEIGHBOURS_ORTHOGONAL_VECTORS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, 1), (0, -1)];
 pub const NEIGHBOURS_DIAGONAL_VECTORS: [(isize, isize); 4] = [(-1, -1), (1, -1), (1, 1), (-1, 1)];
-pub const NEIGHBOURS_ALL_VECTORS: [(isize, isize); 7] =
-    [(-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)];
+pub const NEIGHBOURS_ALL_VECTORS: [(isize, isize); 8] = [
+    (-1, -1),
+    (0, -1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+    (0, 1),
+    (-1, 1),
+    (-1, 0),
+];
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Grid<T> {
