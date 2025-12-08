@@ -7,16 +7,6 @@ pub fn part_one(input: &str) -> Option<usize> {
 
     let mut set = RangeUnionFind::<u64>::new();
 
-    dbg!(
-        ranges
-            .lines()
-            .filter_map(|l| {
-                let (_a, b) = l.split_once('-')?;
-                b.parse::<u64>().ok()
-            })
-            .max()
-    );
-
     for r in ranges.lines().filter_map(|l| {
         let (a, b) = l.split_once('-')?;
         let (a, b) = (a.parse::<u64>().ok()?, b.parse::<u64>().ok()?);
