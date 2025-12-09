@@ -25,6 +25,7 @@ dependencies = [
  "dhat",
  "itertools",
  "pico-args",
+ "planar_convex_hull",
  "range_union_find",
  "tinyjson",
 ]
@@ -265,6 +266,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
 
 [[package]]
+name = "ordered-float"
+version = "3.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1e1c390732d15f1d48471625cd92d154e66db2c56645e29a9cd26f4699f72dc"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "parking_lot"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -292,6 +302,15 @@ name = "pico-args"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5be167a7af36ee22fe3115051bc51f6e6c7054c9348e28deb4f49bd6f705a315"
+
+[[package]]
+name = "planar_convex_hull"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "267a166de1729302fbc4fac6aae6d3e022d61895055e9b38d3757c05149b3d70"
+dependencies = [
+ "ordered-float",
+]
 
 [[package]]
 name = "proc-macro2"
