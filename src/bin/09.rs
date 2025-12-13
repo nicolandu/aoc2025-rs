@@ -1,6 +1,8 @@
-use geo::{Covers, LineString, Polygon, Rect, coord};
+use std::{collections::HashMap, iter::once};
+
 use itertools::Itertools;
 use planar_convex_hull::ConvexHull;
+use range_union_find::{OverlapType, RangeUnionFind};
 
 advent_of_code::solution!(9);
 
@@ -36,25 +38,70 @@ pub fn part_two(input: &str) -> Option<i32> {
             Some::<(i32, i32)>((x.parse().ok()?, y.parse().ok()?))
         })
         .collect_vec();
-    let outer = Polygon::new(
-        LineString::from(pts.iter().map(|&(x, y)| (x as f64, y as f64)).collect_vec()),
-        vec![],
-    );
+    let mut horiz = HashMap::<_, RangeUnionFind<_>>::new();
+    let mut vert = HashMap::<_, RangeUnionFind<_>>::new();
+    for (&(x1, y1), &(x2, y2)) in pts
+        .iter()
+        .tuple_windows()
+        .chain(once((pts.last()?, pts.first()?)))
+    {
+        if x1 == x2 {
+            for y in y1.min(y2)..=y1.max(y2) {
+                vert.entry(y)
+                    .or_insert_with(RangeUnionFind::new)
+                    .insert_range(&(x1..=x1))
+                    .ok()?
+            }
+        } else {
+            for x in x1.min(x2)..=x1.max(x2) {
+                horiz
+                    .entry(x)
+                    .or_insert_with(RangeUnionFind::new)
+                    .insert_range(&(y1..=y1))
+                    .ok()?
+            }
+        }
+    }
     pts.iter()
         .flat_map(|p1| {
-            dbg!(p1);
             pts.iter().map(|p2| {
                 let (x1, y1, x2, y2) = (p1.0, p1.1, p2.0, p2.1);
-                let (x1, y1, x2, y2) = (x1.min(x2), y1.min(y2), x1.max(x2), y1.max(y2));
-                let inner = Rect::new(
-                    coord! {x: x1 as f64, y: y1 as f64},
-                    coord! {x: x2 as f64, y: y2 as f64},
+                let (x1p, y1p, x2p, y2p) = (
+                    x1.min(x2) + 1,
+                    y1.min(y2) + 1,
+                    x1.max(x2) - 1,
+                    y1.max(y2) - 1,
                 );
-                if outer.covers(&inner) {
-                    ((x2 - x1).abs() + 1) * ((y2 - y1).abs() + 1)
-                } else {
-                    0
+                // Let's not care about 1-wide inner rectangles
+                if x2p < x1p || y2p < y1p {
+                    return 0;
                 }
+                if vert
+                    .get(&y1p)
+                    .and_then(|r| Some(r.has_range(&(x1p..=x2p)).ok()? != OverlapType::Disjoint))
+                    .unwrap_or(false)
+                    || vert
+                        .get(&y2p)
+                        .and_then(|r| {
+                            Some(r.has_range(&(x1p..=x2p)).ok()? != OverlapType::Disjoint)
+                        })
+                        .unwrap_or(false)
+                    || horiz
+                        .get(&x1p)
+                        .and_then(|r| {
+                            Some(r.has_range(&(y1p..=y2p)).ok()? != OverlapType::Disjoint)
+                        })
+                        .unwrap_or(false)
+                    || horiz
+                        .get(&x2p)
+                        .and_then(|r| {
+                            Some(r.has_range(&(y1p..=y2p)).ok()? != OverlapType::Disjoint)
+                        })
+                        .unwrap_or(false)
+                {
+                    return 0;
+                }
+                ((x2 - x1).abs() + 1) * ((y2 - y1).abs() + 1)
             })
         })
         .max()
